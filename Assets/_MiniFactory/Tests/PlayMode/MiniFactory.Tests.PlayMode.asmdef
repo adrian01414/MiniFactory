@@ -1,0 +1,23 @@
+{
+    "name": "MiniFactory.Tests.PlayMode",
+    "rootNamespace": "MiniFactory.Tests.PlayMode",
+    "references": [
+        "MiniFactory.Core",
+        "MiniFactory.Game",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,20 @@
+{
+    "name": "MiniFactory.App",
+    "rootNamespace": "MiniFactory.App",
+    "references": [
+        "MiniFactory.Core",
+        "MiniFactory.Game",
+        "MiniFactory.UI",
+        "MiniFactory.Config.Local",
+        "VContainer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

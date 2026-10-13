@@ -1,0 +1,21 @@
+{
+    "name": "MiniFactory.Iap.UnityIAP",
+    "rootNamespace": "MiniFactory.Iap.UnityIAP",
+    "references": [
+        "MiniFactory.Core",
+        "Unity.Purchasing"
+    ],
+    "includePlatforms": [
+        "Android",
+        "iOS",
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

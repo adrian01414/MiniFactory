@@ -1,0 +1,16 @@
+{
+    "name": "MiniFactory.Config.Firebase",
+    "rootNamespace": "MiniFactory.Config.Firebase",
+    "references": [
+        "MiniFactory.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

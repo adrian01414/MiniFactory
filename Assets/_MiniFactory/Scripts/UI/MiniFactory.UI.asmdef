@@ -1,0 +1,19 @@
+{
+    "name": "MiniFactory.UI",
+    "rootNamespace": "MiniFactory.UI",
+    "references": [
+        "MiniFactory.Core",
+        "MiniFactory.Game",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

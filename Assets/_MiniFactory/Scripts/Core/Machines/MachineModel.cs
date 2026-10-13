@@ -74,5 +74,10 @@ namespace MiniFactory.Core.Machines
             StateChanged?.Invoke(_state);
             LevelChanged?.Invoke(_level);
         }
+
+        public void Reset()
+        {
+            RestoreState(Config.RequiresUnlock ? MachineState.Locked : MachineState.Unlocked, 1);
+        }
     }
 }

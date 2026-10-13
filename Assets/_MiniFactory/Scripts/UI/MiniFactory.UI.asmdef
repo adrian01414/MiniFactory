@@ -4,6 +4,7 @@
     "references": [
         "MiniFactory.Core",
         "MiniFactory.Game",
+        "MiniFactory.Config.Local",
         "UnityEngine.UI",
         "Unity.TextMeshPro"
     ],

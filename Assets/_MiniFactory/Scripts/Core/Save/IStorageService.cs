@@ -6,5 +6,6 @@ namespace MiniFactory.Core
     {
         void Save(string key, object data, Action<bool> callback);
         void Load<T>(string key, Action<T> callback);
+        void Delete(string key, Action<bool> callback);
     }
 }

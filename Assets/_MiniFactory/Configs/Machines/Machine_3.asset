@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Machine_3
   m_EditorClassIdentifier: MiniFactory.Config.Local::MiniFactory.Config.Local.MachineConfigAsset
   id: machine_3
+  displayName: Machine 3
   baseProduction: 25
   productionGrowth: 1.14
   baseUpgradeCost: 5000

@@ -61,6 +61,20 @@ namespace MiniFactory.Core.Economy
             return true;
         }
 
+        public void Reset()
+        {
+            if (_balance != 0.0)
+            {
+                _balance = 0.0;
+                BalanceChanged?.Invoke(_balance);
+            }
+
+            for (int i = 0; i < _machines.Length; i++)
+            {
+                _machines[i].Reset();
+            }
+        }
+
         private void OnMachineLevelChanged(int level)
         {
             RecalculateTotalProduction();

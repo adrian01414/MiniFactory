@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using MiniFactory.Core.Boost;
+using MiniFactory.Core.Config;
 using MiniFactory.Core.Economy;
+using MiniFactory.Core.Iap;
 using MiniFactory.Core.Machines;
 using MiniFactory.Core.Offline;
 using MiniFactory.Core.Save;
@@ -21,6 +23,7 @@ namespace MiniFactory.App
         [SerializeField] private GameLifetimeScope _scope;
         [SerializeField] private TopBarView _topBarView;
         [SerializeField] private BoostView _boostView;
+        [SerializeField] private BuyCurrencyView _buyCurrencyView;
         [SerializeField] private MachineView[] _machineViews;
         [SerializeField] private AppLifecycleObserver _lifecycleObserver;
 
@@ -33,7 +36,10 @@ namespace MiniFactory.App
         private OfflineService _offlineService;
         private TopBarPresenter _topBarPresenter;
         private BoostPresenter _boostPresenter;
+        private BuyCurrencyPresenter _buyCurrencyPresenter;
         private SaveService _saveService;
+        private IIapService _iapService;
+        private GameConfig _config;
 
         private bool _isPaused;
         private double _autoSaveElapsed;
@@ -46,6 +52,8 @@ namespace MiniFactory.App
             _boostService = _scope.Container.Resolve<BoostService>();
             _offlineService = _scope.Container.Resolve<OfflineService>();
             _saveService = _scope.Container.Resolve<SaveService>();
+            _iapService = _scope.Container.Resolve<IIapService>();
+            _config = _scope.Container.Resolve<GameConfig>();
 
             _offlineService.OfflineApplied += OnOfflineApplied;
 
@@ -57,6 +65,7 @@ namespace MiniFactory.App
             }
 
             _saveService.Load(Initialize);
+            _iapService.InitializeAsync();
         }
 
         private void Update()
@@ -98,6 +107,12 @@ namespace MiniFactory.App
 
             _boostPresenter = new BoostPresenter(_boostView, _boostModel, _boostService);
             _boostPresenter.Bind();
+
+            if (_buyCurrencyView != null)
+            {
+                _buyCurrencyPresenter = new BuyCurrencyPresenter(_buyCurrencyView, _iapService, _config);
+                _buyCurrencyPresenter.Bind();
+            }
 
             _machinePresenters.Clear();
 
@@ -229,6 +244,12 @@ namespace MiniFactory.App
             {
                 _boostPresenter.Unbind();
                 _boostPresenter = null;
+            }
+
+            if (_buyCurrencyPresenter != null)
+            {
+                _buyCurrencyPresenter.Unbind();
+                _buyCurrencyPresenter = null;
             }
         }
 

@@ -8,6 +8,7 @@ namespace MiniFactory.Core.Iap
     {
         event Action<string> PurchaseSucceeded;
         event Action<string, IapFailureReason> PurchaseFailed;
+        event Action Initialized;
 
         bool IsInitialized { get; }
         bool IsAvailable { get; }

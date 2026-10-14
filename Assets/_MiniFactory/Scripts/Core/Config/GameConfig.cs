@@ -11,6 +11,7 @@ namespace MiniFactory.Core.Config
         public double boostMultiplier = 2.0;
         public double boostCost = 250.0;
         public MachineConfig[] machines = Array.Empty<MachineConfig>();
+        public ProductConfig[] products = Array.Empty<ProductConfig>();
 
         public bool TryGetMachine(string id, out MachineConfig machine)
         {
@@ -27,6 +28,28 @@ namespace MiniFactory.Core.Config
                 if (candidate != null && candidate.id == id)
                 {
                     machine = candidate;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool TryGetProduct(string id, out ProductConfig product)
+        {
+            product = null;
+
+            if (string.IsNullOrEmpty(id) || products == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < products.Length; i++)
+            {
+                ProductConfig candidate = products[i];
+                if (candidate != null && candidate.id == id)
+                {
+                    product = candidate;
                     return true;
                 }
             }

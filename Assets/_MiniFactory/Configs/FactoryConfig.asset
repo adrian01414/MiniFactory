@@ -21,3 +21,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c11fb0ddc4af35144b340564c5243111, type: 2}
   - {fileID: 11400000, guid: 41f8946f37f8bb346b672a05c166dd1a, type: 2}
   - {fileID: 11400000, guid: 137a04022c84eec47bf500c2f0406728, type: 2}
+  products:
+  - id: coins_pack_small
+    coins: 10000

@@ -6,6 +6,7 @@
         "MiniFactory.Game",
         "MiniFactory.UI",
         "MiniFactory.Config.Local",
+        "MiniFactory.Iap.UnityIAP",
         "VContainer"
     ],
     "includePlatforms": [],

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77082b4f17c6df34980afc42c5209374, type: 3}
+  m_Name: FactoryConfig
+  m_EditorClassIdentifier: MiniFactory.Config.Local::MiniFactory.Config.Local.FactoryConfigAsset
+  offlineCapSeconds: 3600
+  boostEnabled: 1
+  boostDurationSeconds: 30
+  boostMultiplier: 3
+  boostCost: 1000
+  machines:
+  - {fileID: 11400000, guid: c11fb0ddc4af35144b340564c5243111, type: 2}
+  - {fileID: 11400000, guid: 41f8946f37f8bb346b672a05c166dd1a, type: 2}
+  - {fileID: 11400000, guid: 137a04022c84eec47bf500c2f0406728, type: 2}
+  products:
+  - id: coins_pack_small
+    coins: 10000

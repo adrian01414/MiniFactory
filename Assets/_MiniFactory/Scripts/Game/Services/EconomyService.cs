@@ -1,4 +1,5 @@
 using System;
+using MiniFactory.Core.Boost;
 using MiniFactory.Core.Economy;
 using MiniFactory.Core.Machines;
 
@@ -10,10 +11,12 @@ namespace MiniFactory.Game.Services
         public event Action<MachineModel> MachineUpgraded;
 
         private readonly EconomyModel _economyModel;
+        private readonly BoostModel _boostModel;
 
-        public EconomyService(EconomyModel economyModel)
+        public EconomyService(EconomyModel economyModel, BoostModel boostModel)
         {
             _economyModel = economyModel ?? throw new ArgumentNullException(nameof(economyModel));
+            _boostModel = boostModel ?? throw new ArgumentNullException(nameof(boostModel));
         }
 
         public void Tick(double deltaSeconds)
@@ -23,7 +26,7 @@ namespace MiniFactory.Game.Services
                 return;
             }
 
-            double income = EconomyCalculator.GetIncome(_economyModel.TotalProduction, 1.0, deltaSeconds);
+            double income = EconomyCalculator.GetIncome(_economyModel.TotalProduction, _boostModel.ActiveMultiplier, deltaSeconds);
 
             if (income > 0.0)
             {

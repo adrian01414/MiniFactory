@@ -9,6 +9,7 @@ namespace MiniFactory.Core.Config
         public bool boostEnabled = true;
         public double boostDurationSeconds = 30.0;
         public double boostMultiplier = 2.0;
+        public double boostCost = 250.0;
         public MachineConfig[] machines = Array.Empty<MachineConfig>();
 
         public bool TryGetMachine(string id, out MachineConfig machine)

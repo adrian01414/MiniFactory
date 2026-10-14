@@ -11,6 +11,7 @@ namespace MiniFactory.Config.Local
         public bool boostEnabled = true;
         public double boostDurationSeconds = 30.0;
         public double boostMultiplier = 2.0;
+        public double boostCost = 250.0;
         public MachineConfigAsset[] machines = Array.Empty<MachineConfigAsset>();
 
         public GameConfig ToData()
@@ -21,6 +22,7 @@ namespace MiniFactory.Config.Local
                 boostEnabled = boostEnabled,
                 boostDurationSeconds = boostDurationSeconds,
                 boostMultiplier = boostMultiplier,
+                boostCost = boostCost,
                 machines = BuildMachineData()
             };
         }

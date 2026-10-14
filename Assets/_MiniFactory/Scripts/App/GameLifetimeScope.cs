@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using MiniFactory.Config.Local;
 using MiniFactory.Core;
+using MiniFactory.Core.Boost;
 using MiniFactory.Core.Config;
 using MiniFactory.Core.Economy;
 using MiniFactory.Core.Machines;
@@ -24,10 +25,14 @@ namespace MiniFactory.App
             configProvider.Load(loaded => config = loaded);
 
             EconomyModel economyModel = new EconomyModel(BuildMachines(config));
-            EconomyService economyService = new EconomyService(economyModel);
+            BoostModel boostModel = new BoostModel(config);
+            EconomyService economyService = new EconomyService(economyModel, boostModel);
+            BoostService boostService = new BoostService(boostModel, economyModel);
 
             builder.RegisterInstance(economyModel);
+            builder.RegisterInstance(boostModel);
             builder.RegisterInstance(economyService);
+            builder.RegisterInstance(boostService);
             builder.Register<FileStorageService>(Lifetime.Singleton).As<IStorageService>();
             builder.Register<SaveService>(Lifetime.Singleton);
         }

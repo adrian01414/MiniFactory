@@ -1,4 +1,5 @@
 using System;
+using MiniFactory.Core.Boost;
 using MiniFactory.Core.Economy;
 using MiniFactory.Core.Formatting;
 using MiniFactory.UI.Views;
@@ -11,21 +12,24 @@ namespace MiniFactory.UI.Presenters
 
         private readonly TopBarView _view;
         private readonly EconomyModel _economyModel;
+        private readonly BoostModel _boostModel;
 
         private double _elapsed;
         private bool _balanceDirty;
         private bool _productionDirty;
 
-        public TopBarPresenter(TopBarView view, EconomyModel economyModel)
+        public TopBarPresenter(TopBarView view, EconomyModel economyModel, BoostModel boostModel)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _economyModel = economyModel ?? throw new ArgumentNullException(nameof(economyModel));
+            _boostModel = boostModel ?? throw new ArgumentNullException(nameof(boostModel));
         }
 
         public void Bind()
         {
             _economyModel.BalanceChanged += OnBalanceChanged;
             _economyModel.TotalProductionChanged += OnTotalProductionChanged;
+            _boostModel.ActiveChanged += OnBoostActiveChanged;
             RefreshBalance();
             RefreshProduction();
         }
@@ -34,6 +38,7 @@ namespace MiniFactory.UI.Presenters
         {
             _economyModel.BalanceChanged -= OnBalanceChanged;
             _economyModel.TotalProductionChanged -= OnTotalProductionChanged;
+            _boostModel.ActiveChanged -= OnBoostActiveChanged;
         }
 
         public void Tick(double deltaTime)
@@ -75,6 +80,11 @@ namespace MiniFactory.UI.Presenters
             _productionDirty = true;
         }
 
+        private void OnBoostActiveChanged(bool isActive)
+        {
+            _productionDirty = true;
+        }
+
         private void RefreshBalance()
         {
             _view.SetBalanceText(NumberFormatter.Format(_economyModel.Balance));
@@ -82,7 +92,7 @@ namespace MiniFactory.UI.Presenters
 
         private void RefreshProduction()
         {
-            _view.SetTotalProductionText(NumberFormatter.Format(_economyModel.TotalProduction) + "/s");
+            _view.SetTotalProductionText(NumberFormatter.Format(_economyModel.TotalProduction * _boostModel.ActiveMultiplier) + "/s");
         }
     }
 }

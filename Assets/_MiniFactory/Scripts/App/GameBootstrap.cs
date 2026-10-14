@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MiniFactory.Core.Boost;
 using MiniFactory.Core.Economy;
 using MiniFactory.Core.Machines;
 using MiniFactory.Core.Save;
@@ -14,19 +15,25 @@ namespace MiniFactory.App
     {
         [SerializeField] private GameLifetimeScope _scope;
         [SerializeField] private TopBarView _topBarView;
+        [SerializeField] private BoostView _boostView;
         [SerializeField] private MachineView[] _machineViews;
 
         private readonly List<MachinePresenter> _machinePresenters = new List<MachinePresenter>();
 
         private EconomyModel _economyModel;
         private EconomyService _economyService;
+        private BoostModel _boostModel;
+        private BoostService _boostService;
         private TopBarPresenter _topBarPresenter;
+        private BoostPresenter _boostPresenter;
         private SaveService _saveService;
 
         private void Start()
         {
             _economyModel = _scope.Container.Resolve<EconomyModel>();
             _economyService = _scope.Container.Resolve<EconomyService>();
+            _boostModel = _scope.Container.Resolve<BoostModel>();
+            _boostService = _scope.Container.Resolve<BoostService>();
             _saveService = _scope.Container.Resolve<SaveService>();
             _saveService.Load(Initialize);
         }
@@ -39,6 +46,7 @@ namespace MiniFactory.App
             }
 
             double deltaTime = Time.deltaTime;
+            _boostService.Tick(deltaTime);
             _economyService.Tick(deltaTime);
 
             if (_topBarPresenter != null)
@@ -77,8 +85,11 @@ namespace MiniFactory.App
         {
             ApplySave(saveData);
 
-            _topBarPresenter = new TopBarPresenter(_topBarView, _economyModel);
+            _topBarPresenter = new TopBarPresenter(_topBarView, _economyModel, _boostModel);
             _topBarPresenter.Bind();
+
+            _boostPresenter = new BoostPresenter(_boostView, _boostModel, _boostService);
+            _boostPresenter.Bind();
 
             _machinePresenters.Clear();
 
@@ -98,7 +109,7 @@ namespace MiniFactory.App
                     continue;
                 }
 
-                MachinePresenter presenter = new MachinePresenter(view, model, _economyService, Save);
+                MachinePresenter presenter = new MachinePresenter(view, model, _economyService, _boostModel, Save);
                 presenter.Bind();
                 _machinePresenters.Add(presenter);
             }
@@ -164,6 +175,12 @@ namespace MiniFactory.App
             {
                 _topBarPresenter.Unbind();
                 _topBarPresenter = null;
+            }
+
+            if (_boostPresenter != null)
+            {
+                _boostPresenter.Unbind();
+                _boostPresenter = null;
             }
         }
     }

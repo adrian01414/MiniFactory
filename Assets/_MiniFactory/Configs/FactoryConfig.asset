@@ -16,6 +16,7 @@ MonoBehaviour:
   boostEnabled: 1
   boostDurationSeconds: 30
   boostMultiplier: 3
+  boostCost: 1000
   machines:
   - {fileID: 11400000, guid: c11fb0ddc4af35144b340564c5243111, type: 2}
   - {fileID: 11400000, guid: 41f8946f37f8bb346b672a05c166dd1a, type: 2}

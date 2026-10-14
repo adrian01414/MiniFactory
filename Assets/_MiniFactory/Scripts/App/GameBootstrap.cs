@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using MiniFactory.Core.Boost;
 using MiniFactory.Core.Economy;
 using MiniFactory.Core.Machines;
+using MiniFactory.Core.Offline;
 using MiniFactory.Core.Save;
+using MiniFactory.Game.Lifecycle;
 using MiniFactory.Game.Services;
 using MiniFactory.UI.Presenters;
 using MiniFactory.UI.Views;
@@ -13,10 +16,13 @@ namespace MiniFactory.App
 {
     public sealed class GameBootstrap : MonoBehaviour
     {
+        private const double AutoSaveInterval = 30.0;
+
         [SerializeField] private GameLifetimeScope _scope;
         [SerializeField] private TopBarView _topBarView;
         [SerializeField] private BoostView _boostView;
         [SerializeField] private MachineView[] _machineViews;
+        [SerializeField] private AppLifecycleObserver _lifecycleObserver;
 
         private readonly List<MachinePresenter> _machinePresenters = new List<MachinePresenter>();
 
@@ -24,9 +30,13 @@ namespace MiniFactory.App
         private EconomyService _economyService;
         private BoostModel _boostModel;
         private BoostService _boostService;
+        private OfflineService _offlineService;
         private TopBarPresenter _topBarPresenter;
         private BoostPresenter _boostPresenter;
         private SaveService _saveService;
+
+        private bool _isPaused;
+        private double _autoSaveElapsed;
 
         private void Start()
         {
@@ -34,13 +44,24 @@ namespace MiniFactory.App
             _economyService = _scope.Container.Resolve<EconomyService>();
             _boostModel = _scope.Container.Resolve<BoostModel>();
             _boostService = _scope.Container.Resolve<BoostService>();
+            _offlineService = _scope.Container.Resolve<OfflineService>();
             _saveService = _scope.Container.Resolve<SaveService>();
+
+            _offlineService.OfflineApplied += OnOfflineApplied;
+
+            if (_lifecycleObserver != null)
+            {
+                _lifecycleObserver.Paused += OnPaused;
+                _lifecycleObserver.Resumed += OnResumed;
+                _lifecycleObserver.Quitting += OnQuitting;
+            }
+
             _saveService.Load(Initialize);
         }
 
         private void Update()
         {
-            if (_economyService == null)
+            if (_economyService == null || _isPaused)
             {
                 return;
             }
@@ -53,37 +74,24 @@ namespace MiniFactory.App
             {
                 _topBarPresenter.Tick(deltaTime);
             }
-        }
 
-        private void OnApplicationPause(bool pause)
-        {
-            if (pause)
+            _autoSaveElapsed += deltaTime;
+
+            if (_autoSaveElapsed >= AutoSaveInterval)
             {
+                _autoSaveElapsed = 0.0;
                 Save();
             }
-        }
-
-        private void OnApplicationFocus(bool focus)
-        {
-            if (!focus)
-            {
-                Save();
-            }
-        }
-
-        private void OnApplicationQuit()
-        {
-            Save();
-        }
-
-        private void OnDestroy()
-        {
-            Unbind();
         }
 
         private void Initialize(SaveData saveData)
         {
             ApplySave(saveData);
+
+            if (saveData != null)
+            {
+                _offlineService.Apply(GetElapsedSeconds());
+            }
 
             _topBarPresenter = new TopBarPresenter(_topBarView, _economyModel, _boostModel);
             _topBarPresenter.Bind();
@@ -113,6 +121,8 @@ namespace MiniFactory.App
                 presenter.Bind();
                 _machinePresenters.Add(presenter);
             }
+
+            Save();
         }
 
         private void ApplySave(SaveData saveData)
@@ -135,6 +145,8 @@ namespace MiniFactory.App
                     machine.RestoreState((MachineState)machineData.state, machineData.level);
                 }
             }
+
+            _boostModel.RestoreState(saveData.boostHasBoost, saveData.boostIsActive, saveData.boostRemainingSeconds);
         }
 
         private MachineModel FindModel(string id)
@@ -152,6 +164,19 @@ namespace MiniFactory.App
             return null;
         }
 
+        private double GetElapsedSeconds()
+        {
+            long now = DateTime.UtcNow.Ticks;
+            long last = _saveService.LastSaveTimeUtcTicks;
+
+            if (last <= 0L || now <= last)
+            {
+                return 0.0;
+            }
+
+            return (now - last) / (double)TimeSpan.TicksPerSecond;
+        }
+
         private void Save()
         {
             if (_economyModel == null || _saveService == null)
@@ -159,7 +184,30 @@ namespace MiniFactory.App
                 return;
             }
 
-            _saveService.Save(_economyModel.Balance, _economyModel.Machines);
+            _saveService.Save(_economyModel.Balance, _economyModel.Machines, _boostModel);
+        }
+
+        private void OnPaused()
+        {
+            _isPaused = true;
+            Save();
+        }
+
+        private void OnResumed()
+        {
+            _isPaused = false;
+            _offlineService.Apply(GetElapsedSeconds());
+            Save();
+        }
+
+        private void OnQuitting()
+        {
+            Save();
+        }
+
+        private void OnOfflineApplied(OfflineProgressResult result)
+        {
+            Debug.Log("Offline income applied: +" + result.Income + " (" + result.AppliedSeconds + "s, capped=" + result.WasCapped + ")");
         }
 
         private void Unbind()
@@ -181,6 +229,23 @@ namespace MiniFactory.App
             {
                 _boostPresenter.Unbind();
                 _boostPresenter = null;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Unbind();
+
+            if (_offlineService != null)
+            {
+                _offlineService.OfflineApplied -= OnOfflineApplied;
+            }
+
+            if (_lifecycleObserver != null)
+            {
+                _lifecycleObserver.Paused -= OnPaused;
+                _lifecycleObserver.Resumed -= OnResumed;
+                _lifecycleObserver.Quitting -= OnQuitting;
             }
         }
     }

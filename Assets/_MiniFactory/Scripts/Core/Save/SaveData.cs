@@ -8,6 +8,10 @@ namespace MiniFactory.Core.Save
         public int version = 1;
         public double balance;
         public MachineSaveData[] machines = Array.Empty<MachineSaveData>();
+        public bool boostHasBoost;
+        public bool boostIsActive;
+        public double boostRemainingSeconds;
+        public long lastSaveTimeUtcTicks;
 
         public bool TryGetMachine(string id, out MachineSaveData machine)
         {

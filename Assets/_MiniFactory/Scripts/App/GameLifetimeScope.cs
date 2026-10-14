@@ -28,11 +28,13 @@ namespace MiniFactory.App
             BoostModel boostModel = new BoostModel(config);
             EconomyService economyService = new EconomyService(economyModel, boostModel);
             BoostService boostService = new BoostService(boostModel, economyModel);
+            OfflineService offlineService = new OfflineService(economyModel, boostModel, config);
 
             builder.RegisterInstance(economyModel);
             builder.RegisterInstance(boostModel);
             builder.RegisterInstance(economyService);
             builder.RegisterInstance(boostService);
+            builder.RegisterInstance(offlineService);
             builder.Register<FileStorageService>(Lifetime.Singleton).As<IStorageService>();
             builder.Register<SaveService>(Lifetime.Singleton);
         }

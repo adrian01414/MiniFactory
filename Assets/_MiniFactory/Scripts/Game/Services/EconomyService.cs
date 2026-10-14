@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using MiniFactory.Core.Analytics;
 using MiniFactory.Core.Boost;
 using MiniFactory.Core.Economy;
 using MiniFactory.Core.Machines;
@@ -12,11 +14,13 @@ namespace MiniFactory.Game.Services
 
         private readonly EconomyModel _economyModel;
         private readonly BoostModel _boostModel;
+        private readonly AnalyticsService _analyticsService;
 
-        public EconomyService(EconomyModel economyModel, BoostModel boostModel)
+        public EconomyService(EconomyModel economyModel, BoostModel boostModel, AnalyticsService analyticsService)
         {
             _economyModel = economyModel ?? throw new ArgumentNullException(nameof(economyModel));
             _boostModel = boostModel ?? throw new ArgumentNullException(nameof(boostModel));
+            _analyticsService = analyticsService ?? throw new ArgumentNullException(nameof(analyticsService));
         }
 
         public void Tick(double deltaSeconds)
@@ -41,13 +45,21 @@ namespace MiniFactory.Game.Services
                 return false;
             }
 
-            if (!_economyModel.TrySpend(machine.UnlockCost))
+            double cost = machine.UnlockCost;
+
+            if (!_economyModel.TrySpend(cost))
             {
                 return false;
             }
 
             machine.Unlock();
             MachineUnlocked?.Invoke(machine);
+            _analyticsService.Track(AnalyticsEventNames.MachineUnlocked, new Dictionary<string, object>
+            {
+                { AnalyticsParams.MachineId, machine.Id },
+                { AnalyticsParams.Level, machine.Level },
+                { AnalyticsParams.Cost, cost }
+            });
             return true;
         }
 
@@ -58,13 +70,21 @@ namespace MiniFactory.Game.Services
                 return false;
             }
 
-            if (!_economyModel.TrySpend(machine.NextUpgradeCost))
+            double cost = machine.NextUpgradeCost;
+
+            if (!_economyModel.TrySpend(cost))
             {
                 return false;
             }
 
             machine.Upgrade();
             MachineUpgraded?.Invoke(machine);
+            _analyticsService.Track(AnalyticsEventNames.MachineUpgraded, new Dictionary<string, object>
+            {
+                { AnalyticsParams.MachineId, machine.Id },
+                { AnalyticsParams.Level, machine.Level },
+                { AnalyticsParams.Cost, cost }
+            });
             return true;
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MiniFactory.Core.Analytics;
 using MiniFactory.Core.Boost;
 using MiniFactory.Core.Config;
 using MiniFactory.Core.Economy;
@@ -19,6 +20,7 @@ namespace MiniFactory.App
     public sealed class GameBootstrap : MonoBehaviour
     {
         private const double AutoSaveInterval = 30.0;
+        private const string SessionCountKey = "mini_factory_session_count";
 
         [SerializeField] private GameLifetimeScope _scope;
         [SerializeField] private TopBarView _topBarView;
@@ -39,6 +41,7 @@ namespace MiniFactory.App
         private BuyCurrencyPresenter _buyCurrencyPresenter;
         private SaveService _saveService;
         private IIapService _iapService;
+        private AnalyticsService _analyticsService;
         private GameConfig _config;
 
         private bool _isPaused;
@@ -53,6 +56,7 @@ namespace MiniFactory.App
             _offlineService = _scope.Container.Resolve<OfflineService>();
             _saveService = _scope.Container.Resolve<SaveService>();
             _iapService = _scope.Container.Resolve<IIapService>();
+            _analyticsService = _scope.Container.Resolve<AnalyticsService>();
             _config = _scope.Container.Resolve<GameConfig>();
 
             _offlineService.OfflineApplied += OnOfflineApplied;
@@ -63,6 +67,13 @@ namespace MiniFactory.App
                 _lifecycleObserver.Resumed += OnResumed;
                 _lifecycleObserver.Quitting += OnQuitting;
             }
+
+            _analyticsService.Initialize();
+            _analyticsService.Track(AnalyticsEventNames.GameStarted, new Dictionary<string, object>
+            {
+                { AnalyticsParams.SessionCount, GetSessionCount() },
+                { AnalyticsParams.ConfigSource, "local" }
+            });
 
             _saveService.Load(Initialize);
             _iapService.InitializeAsync();
@@ -190,6 +201,14 @@ namespace MiniFactory.App
             }
 
             return (now - last) / (double)TimeSpan.TicksPerSecond;
+        }
+
+        private int GetSessionCount()
+        {
+            int count = PlayerPrefs.GetInt(SessionCountKey, 0) + 1;
+            PlayerPrefs.SetInt(SessionCountKey, count);
+            PlayerPrefs.Save();
+            return count;
         }
 
         private void Save()

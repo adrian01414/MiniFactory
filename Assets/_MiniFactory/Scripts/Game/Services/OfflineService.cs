@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using MiniFactory.Core.Analytics;
 using MiniFactory.Core.Boost;
 using MiniFactory.Core.Config;
 using MiniFactory.Core.Economy;
@@ -13,12 +15,14 @@ namespace MiniFactory.Game.Services
         private readonly EconomyModel _economyModel;
         private readonly BoostModel _boostModel;
         private readonly GameConfig _config;
+        private readonly AnalyticsService _analyticsService;
 
-        public OfflineService(EconomyModel economyModel, BoostModel boostModel, GameConfig config)
+        public OfflineService(EconomyModel economyModel, BoostModel boostModel, GameConfig config, AnalyticsService analyticsService)
         {
             _economyModel = economyModel ?? throw new ArgumentNullException(nameof(economyModel));
             _boostModel = boostModel ?? throw new ArgumentNullException(nameof(boostModel));
             _config = config ?? throw new ArgumentNullException(nameof(config));
+            _analyticsService = analyticsService ?? throw new ArgumentNullException(nameof(analyticsService));
         }
 
         public OfflineProgressResult Apply(double elapsedSeconds)
@@ -42,6 +46,17 @@ namespace MiniFactory.Game.Services
             }
 
             OfflineApplied?.Invoke(result);
+
+            if (result.AppliedSeconds > 0.0)
+            {
+                _analyticsService.Track(AnalyticsEventNames.OfflineIncomeApplied, new Dictionary<string, object>
+                {
+                    { AnalyticsParams.ElapsedSeconds, result.AppliedSeconds },
+                    { AnalyticsParams.Income, result.Income },
+                    { AnalyticsParams.WasCapped, result.WasCapped }
+                });
+            }
+
             return result;
         }
     }

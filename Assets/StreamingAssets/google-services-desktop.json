@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "791473320633",
+    "project_id": "mini-factory-411ab",
+    "storage_bucket": "mini-factory-411ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791473320633:android:4e4f82533c7f47ea162168",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.minifactory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABWn98XxN_lpm0FG3Ko6eG00VRJGm9ucA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
